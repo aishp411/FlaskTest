@@ -32,11 +32,27 @@ pipeline {
         }
 
         stage('Deploy') {
-            steps {
-                
-                echo 'deploy'
-            }
-        }
+  when { branch 'main' }   // only deploy from main (adjust as needed)
+  steps {
+    sh '''
+      echo "Deploy: copying workspace to /opt/flaskapp"
+      rsync -a --delete "$WORKSPACE/" /opt/flaskapp/
+
+      echo "Create venv if missing"
+      python3 -m venv /opt/flaskapp/venv || true
+
+      echo "Install requirements"
+      . /opt/flaskapp/venv/bin/activate
+      pip install --upgrade pip
+      pip install -r /opt/flaskapp/requirements.txt
+
+      echo "Restart systemd service"
+      sudo systemctl restart flaskapp
+      sudo systemctl status flaskapp --no-pager
+    '''
+  }
+}
+
     }
 
     post {
