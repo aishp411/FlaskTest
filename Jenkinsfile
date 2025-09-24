@@ -42,29 +42,7 @@ pipeline {
             }
         }
 
-        stage('Deploy') {
-            when {
-                expression { return env.BRANCH_NAME == null || env.BRANCH_NAME == 'main' }
-            }
-            steps {
-                sh '''
-                echo "Deploy: syncing workspace to $DEPLOY_DIR"
-                rsync -a --delete "$WORKSPACE/" "$DEPLOY_DIR/"
-
-                echo "Creating venv in deploy folder if missing"
-                python3 -m venv $DEPLOY_DIR/venv || true
-
-                echo "Installing dependencies in deploy venv"
-                . $DEPLOY_DIR/venv/bin/activate
-                pip install --upgrade pip
-                pip install -r $DEPLOY_DIR/requirements.txt
-
-                echo "Restarting systemd service"
-                sudo systemctl restart flaskapp
-                sudo systemctl status flaskapp --no-pager
-                '''
-            }
-        }
+        
     }
 
     post {
