@@ -5,7 +5,7 @@ pipeline {
         VENV_DIR = 'venv'
         DEPLOY_DIR = '/opt/flaskapp'
     }
-
+ 
     stages {
         stage('Checkout') {
             steps {
