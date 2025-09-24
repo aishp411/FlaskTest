@@ -3,57 +3,68 @@ pipeline {
 
     environment {
         VENV_DIR = 'venv'
+        DEPLOY_DIR = '/opt/flaskapp'
     }
 
-    
     stages {
         stage('Checkout') {
             steps {
+                // Checkout code from GitHub
                 git url: 'https://github.com/aishp411/FlaskTest.git', branch: 'main'
             }
         }
 
         stage('Setup Virtual Environment') {
             steps {
-                sh 'python3 -m venv $VENV_DIR'
-                sh '. $VENV_DIR/bin/activate && pip install --upgrade pip'
+                sh '''
+                python3 -m venv $VENV_DIR
+                . $VENV_DIR/bin/activate
+                pip install --upgrade pip
+                '''
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                sh '. $VENV_DIR/bin/activate && pip install -r requirements.txt'
+                sh '''
+                . $VENV_DIR/bin/activate
+                pip install -r requirements.txt
+                '''
             }
         }
 
         stage('Run Tests') {
             steps {
-                sh '. $VENV_DIR/bin/activate && pytest --maxfail=1 --disable-warnings -q'
+                sh '''
+                . $VENV_DIR/bin/activate
+                pytest --maxfail=1 --disable-warnings -q
+                '''
             }
         }
 
         stage('Deploy') {
-  when { branch 'main' }   // only deploy from main (adjust as needed)
-  steps {
-    sh '''
-      echo "Deploy: copying workspace to /opt/flaskapp"
-      rsync -a --delete "$WORKSPACE/" /opt/flaskapp/
+            when {
+                expression { return env.BRANCH_NAME == null || env.BRANCH_NAME == 'main' }
+            }
+            steps {
+                sh '''
+                echo "Deploy: syncing workspace to $DEPLOY_DIR"
+                rsync -a --delete "$WORKSPACE/" "$DEPLOY_DIR/"
 
-      echo "Create venv if missing"
-      python3 -m venv /opt/flaskapp/venv || true
+                echo "Creating venv in deploy folder if missing"
+                python3 -m venv $DEPLOY_DIR/venv || true
 
-      echo "Install requirements"
-      . /opt/flaskapp/venv/bin/activate
-      pip install --upgrade pip
-      pip install -r /opt/flaskapp/requirements.txt
+                echo "Installing dependencies in deploy venv"
+                . $DEPLOY_DIR/venv/bin/activate
+                pip install --upgrade pip
+                pip install -r $DEPLOY_DIR/requirements.txt
 
-      echo "Restart systemd service"
-      sudo systemctl restart flaskapp
-      sudo systemctl status flaskapp --no-pager
-    '''
-  }
-}
-
+                echo "Restarting systemd service"
+                sudo systemctl restart flaskapp
+                sudo systemctl status flaskapp --no-pager
+                '''
+            }
+        }
     }
 
     post {
