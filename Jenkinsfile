@@ -45,9 +45,22 @@ pipeline {
         
     }
 
-    post {
-        always {
-            sh 'deactivate || true'
-        }
+    stage('Deploy') {
+    steps {
+        sh '''
+        set -e
+        # Copy project files
+        rsync -av --delete . /opt/flaskapp/
+
+        cd /opt/flaskapp
+        python3 -m venv venv
+        venv/bin/pip install --upgrade pip
+        venv/bin/pip install -r requirements.txt
+
+        # Restart service
+        sudo systemctl restart flaskapp
+        '''
     }
+}
+
 }
