@@ -41,27 +41,23 @@ pipeline {
     }
   }
 
-  post {
-    success {
-      // requires mailer plugin, if not available use a custom script
-      mail to: "${env.CONTACT_EMAIL}",
-           subject: "${env.APP_NAME} build #${env.BUILD_NUMBER} SUCCESS",
-           body: "See details: ${env.BUILD_URL}"
+   post {
+        success {
+            echo '✅ Build and deployment successful!'
+            mail to: 'noreply@yourproject.test',
+                 subject: "✅ Build Successful - ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                 body: "Great news! The build and deployment succeeded.\n\nSee details: ${env.BUILD_URL}",
+                 from: 'noreply@yourproject.test'
+        }
+        failure {
+            echo '❌ Build failed.'
+            mail to: 'noreply@yourproject.test',
+                 subject: "❌ Build Failed - ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                 body: "Unfortunately, the build failed.\n\nCheck details: ${env.BUILD_URL}",
+                 from: 'noreply@yourproject.test'
+        }
     }
-    failure {
-      mail to: "${env.CONTACT_EMAIL}",
-           subject: "${env.APP_NAME} build #${env.BUILD_NUMBER} FAILED",
-           body: "See details: ${env.BUILD_URL}"
-
-      sh '''
-        if [ -f flask.pid ]; then
-          kill $(cat flask.pid) || true
-          rm -f flask.pid
-        fi
-      '''
-    }
-    always {
-      archiveArtifacts artifacts: 'flask.log', allowEmptyArchive: true
-    }
-  }
 }
+
+
+
