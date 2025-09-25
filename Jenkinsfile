@@ -28,6 +28,16 @@ pipeline {
         sh './venv/bin/pytest -q --maxfail=1'
       }
     }
+stage('Deploy (staging)') {
+    steps {
+        sh '''
+        cd $WORKSPACE
+        nohup ./venv/bin/gunicorn -b 0.0.0.0:5000 app:app &
+        sleep 5
+        curl -f http://127.0.0.1:5000/
+        '''
+    }
+}
 
 
   }
