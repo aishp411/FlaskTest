@@ -15,12 +15,12 @@ pipeline {
 
   
 
+stage('Test') {
+  steps {
+    sh "${env.WORKSPACE}/venv/bin/pytest -q --maxfail=1"
+  }
+}
 
-    stage('Test') {
-      steps {
-        sh './venv/bin/pytest -q --maxfail=1'
-      }
-    }
 
      stage('Deploy (staging)') {
   steps {
