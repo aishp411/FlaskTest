@@ -25,12 +25,13 @@ pipeline {
      stage('Deploy (staging)') {
   steps {
     sh '''
-      ./venv/bin/gunicorn -b 0.0.0.0:5000 app:app --daemon
+      ./venv/bin/gunicorn -b 0.0.0.0:5000 app:app &
       sleep 5
-      curl -f http://127.0.0.1:5000/ || (echo "Smoke test failed"; exit 1)
+      curl -f http://127.0.0.1:5000/ || (echo "Smoke test failed"; cat gunicorn.log; exit 1)
     '''
   }
 }
+
 
   }
 
