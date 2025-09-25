@@ -62,5 +62,18 @@ pipeline {
     }
 
    
+// Replace the pipeline above, keep stages same, and use this post block instead:
+post {
+    success {
+        mail to: 'aish.p411@gmail.com',
+             subject: "SUCCESS: ${currentBuild.fullDisplayName}",
+             body: "Build succeeded: ${env.BUILD_URL}"
+    }
+    failure {
+        mail to: 'aish.p411@gmail.com',
+             subject: "FAILURE: ${currentBuild.fullDisplayName}",
+             body: "Build failed: ${env.BUILD_URL}\nSee console output for details."
+    }
+}
 
 }
