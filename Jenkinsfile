@@ -13,15 +13,16 @@ pipeline {
       }
     }
 
-    stage('Build') {
-      steps {
-        sh '''
-          python3 -m venv venv
-          ./venv/bin/pip install --upgrade pip
-          ./venv/bin/pip install -r requirements.txt
-        '''
-      }
-    }
+   stage('Deploy (staging)') {
+  steps {
+    sh '''
+      ./venv/bin/gunicorn -b 0.0.0.0:5000 app:app --daemon
+      sleep 5
+      curl -f http://127.0.0.1:5000/ || (echo "Smoke test failed"; exit 1)
+    '''
+  }
+}
+
 
     stage('Test') {
       steps {
