@@ -48,6 +48,7 @@ pipeline {
     steps {
         sh '''
         set -e
+            mkdir -p /home/jenkins/flaskapp
         # Copy project files to deploy directory
         rsync -av --delete . /home/jenkins/flaskapp/
 
