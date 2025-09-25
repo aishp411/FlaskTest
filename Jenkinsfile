@@ -4,6 +4,8 @@ pipeline {
     environment {
         VENV_DIR = 'venv'
         DEPLOY_DIR = '/opt/flaskapp'
+        CONTACT_EMAIL='ash.p411@gmail.com'
+
     }
  
     stages {
@@ -62,18 +64,22 @@ pipeline {
     }
 
    
-// Replace the pipeline above, keep stages same, and use this post block instead:
-post {
+  post {
     success {
-        mail to: 'aish.p411@gmail.com',
-             subject: "SUCCESS: ${currentBuild.fullDisplayName}",
-             body: "Build succeeded: ${env.BUILD_URL}"
+      mail to: "${env.CONTACT_EMAIL}", subject: " build ${env.BUILD_NUMBER} SUCCESS", body: "${env.BUILD_URL}"
     }
     failure {
-        mail to: 'aish.p411@gmail.com',
-             subject: "FAILURE: ${currentBuild.fullDisplayName}",
-             body: "Build failed: ${env.BUILD_URL}\nSee console output for details."
+      mail to: "${env.CONTACT_EMAIL}", subject: "$ build ${env.BUILD_NUMBER} FAILED", body: "${env.BUILD_URL}"
+      sh '''
+        if [ -f flask.pid ]; then
+          kill $(cat flask.pid) || true
+          rm -f flask.pid
+        fi
+      '''
     }
-}
+    always {
+      archiveArtifacts artifacts: 'flask.log', allowEmptyArchive: true
+    }
+  }
 
 }
