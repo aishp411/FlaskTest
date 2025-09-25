@@ -4,7 +4,7 @@ pipeline {
   environment {
     APP_NAME = 'FlaskTest'
     CONTACT_EMAIL = 'aish.p411@gmail.com'
-  }
+  } 
 
   stages {
     stage('Checkout') {
