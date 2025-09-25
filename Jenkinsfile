@@ -1,5 +1,5 @@
 pipeline {
-    agent { label 'agent1' }
+    agent any
 
     environment {
         VENV_DIR = 'venv'
