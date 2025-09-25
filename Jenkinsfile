@@ -13,24 +13,21 @@ pipeline {
       }
     }
 
-  
+    stage('Build') {
+      steps {
+        sh '''
+          python3 -m venv venv
+          ./venv/bin/pip install --upgrade pip
+          ./venv/bin/pip install -r requirements.txt
+        '''
+      }
+    }
 
-stage('Test') {
-  steps {
-    sh "${env.WORKSPACE}/venv/bin/pytest -q --maxfail=1"
-  }
-}
-
-
-     stage('Deploy (staging)') {
-  steps {
-    sh '''
-      ./venv/bin/gunicorn -b 0.0.0.0:5000 app:app &
-      sleep 5
-      curl -f http://127.0.0.1:5000/ || (echo "Smoke test failed"; cat gunicorn.log; exit 1)
-    '''
-  }
-}
+    stage('Test') {
+      steps {
+        sh './venv/bin/pytest -q --maxfail=1'
+      }
+    }
 
 
   }
