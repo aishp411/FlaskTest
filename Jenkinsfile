@@ -5,7 +5,7 @@ pipeline {
         VENV_DIR = 'venv'
         DEPLOY_DIR = '/opt/flaskapp'
         CONTACT_EMAIL='ash.p411@gmail.com'
-
+ 
     }
  
     stages {
