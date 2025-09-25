@@ -69,7 +69,7 @@ pipeline {
       mail to: "${env.CONTACT_EMAIL}", subject: " build ${env.BUILD_NUMBER} SUCCESS", body: "${env.BUILD_URL}"
     }
     failure {
-      mail to: "${env.CONTACT_EMAIL}", subject: "$ build ${env.BUILD_NUMBER} FAILED", body: "${env.BUILD_URL}"
+      mail to: "${env.CONTACT_EMAIL}", subject: " build ${env.BUILD_NUMBER} FAILED", body: "${env.BUILD_URL}"
       sh '''
         if [ -f flask.pid ]; then
           kill $(cat flask.pid) || true
