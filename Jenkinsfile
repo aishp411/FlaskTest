@@ -34,15 +34,20 @@ stage('Install Dependencies') {
     }
 
     stage('Deploy (staging)') {
-      steps {
-        sh '''
-          nohup ./venv/bin/python3 app.py > flask.log 2>&1 &
-          echo $! > flask.pid
-          sleep 5
-          curl -f http://127.0.0.1:5000/ || (echo "Smoke test failed"; cat flask.log; exit 1)
-        '''
-      }
-    }
+  steps {
+    sh '''
+      nohup ./venv/bin/python3 app.py > flask.log 2>&1 &
+      echo $! > flask.pid
+      sleep 5
+      if ! curl -f http://127.0.0.1:5000/; then
+        echo "Smoke test failed"
+        cat flask.log
+        exit 1
+      fi
+    '''
+  }
+}
+
   }
 
    post {
