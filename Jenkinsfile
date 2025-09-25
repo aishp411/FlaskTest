@@ -44,30 +44,16 @@ pipeline {
             }
         }
 
-    stage('Deploy') {
-    steps {
+     stage('Deploy (staging)') {
+      steps {
         sh '''
-        set -e
-            mkdir -p /home/jenkins/flaskapp
-        # Copy project files to deploy directory
-        rsync -av --delete . /home/jenkins/flaskapp/
-
-        cd /home/jenkins/flaskapp
-
-        # Create virtual environment if not exists
-        if [ ! -d venv ]; then
-            python3 -m venv venv
-        fi
-
-        # Upgrade pip and install dependencies
-        venv/bin/pip install --upgrade pip
-        venv/bin/pip install -r requirements.txt
-
-        # Restart service (if you use systemd, make sure Jenkins user can do this)
-        # sudo systemctl restart flaskapp  # remove sudo if not needed
+          nohup ./venv/bin/python3 flask_app.py > flask.log 2>&1 &
+          echo $! > flask.pid
+          sleep 10
+          curl -f http://127.0.0.1:5000/ || (echo "Smoke test failed"; cat flask.log; exit 1)
         '''
+      }
     }
-}
 
     }
 
