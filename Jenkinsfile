@@ -13,15 +13,7 @@ pipeline {
       }
     }
 
-   stage('Deploy (staging)') {
-  steps {
-    sh '''
-      ./venv/bin/gunicorn -b 0.0.0.0:5000 app:app --daemon
-      sleep 5
-      curl -f http://127.0.0.1:5000/ || (echo "Smoke test failed"; exit 1)
-    '''
-  }
-}
+  
 
 
     stage('Test') {
@@ -30,17 +22,12 @@ pipeline {
       }
     }
 
-    stage('Deploy (staging)') {
+     stage('Deploy (staging)') {
   steps {
     sh '''
-      nohup ./venv/bin/python3 app.py > flask.log 2>&1 &
-      echo $! > flask.pid
+      ./venv/bin/gunicorn -b 0.0.0.0:5000 app:app --daemon
       sleep 5
-      if ! curl -f http://127.0.0.1:5000/; then
-        echo "Smoke test failed"
-        cat flask.log
-        exit 1
-      fi
+      curl -f http://127.0.0.1:5000/ || (echo "Smoke test failed"; exit 1)
     '''
   }
 }
