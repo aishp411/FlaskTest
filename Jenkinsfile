@@ -12,7 +12,11 @@ pipeline {
         git branch: 'main', url: 'https://github.com/aishp411/FlaskTest.git'
       }
     }
-
+stage('Install Dependencies') {
+  steps {
+    sh 'sudo apt-get update && sudo apt-get install -y python3-venv python3-pip'
+  }
+}
     stage('Build') {
       steps {
         sh '''
