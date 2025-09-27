@@ -82,5 +82,5 @@ Script Path: Jenkinsfile
 
 ## 10) Email Notification 
 
-<img width="1151" height="674" alt="Screenshot 2025-09-27 213509" src="https://github.com/user-attachments/assets/05be19cd-6314-4c2b-b1d2-125bac24314b" />
+<img width="1092" height="679" alt="Screenshot 2025-09-27 214036" src="https://github.com/user-attachments/assets/bd4aba83-fd21-4b4a-8018-3cdba594f366" />
 
