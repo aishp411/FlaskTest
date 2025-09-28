@@ -9,6 +9,32 @@ This repository demonstrates a Jenkins-based CI/CD pipeline for a basic Flask we
 - **Deploy** – Automatically deploy the Flask application to a staging server upon successful tests.
 - **Notify** – Send email alerts to inform about the build and deployment status.
 
+## Prerequisites
+
+Before running the Jenkins CI/CD pipeline, ensure the following are set up:
+
+### Jenkins Setup
+- Jenkins installed on a VM or cloud server  
+- Jenkins Pipeline plugin enabled  
+- Git plugin enabled  
+- SMTP configured in Jenkins (for email notifications)  
+- GitHub repository forked and Jenkinsfile added
+- GitHub webhook configured for push events
+
+### System Requirements (on Jenkins agent or master if no agents are used)
+- Python **3.x** installed  
+- `python3-venv` package installed  
+- `pip` package manager  
+- `git` client  
+- `curl`  
+
+### Project Dependencies (inside `requirements.txt`)
+- Flask  
+- pytest  
+- gunicorn
+
+### Python web-application repository used for this pipeline:
+- https://github.com/UnpredictablePrashant/FlaskTest.git
 
 
 ## 1) Create EC2 instance for Jenkins 
@@ -18,21 +44,32 @@ Open port 22 for `ssh`, 8080 for `Jenkins` and 5000 for `flask` app
 
 ## 2) Install Jenkins on EC2
 
-create a shell file install_jenkins.sh with all commands to install and start Jenkins and execute with following commands
+Create a shell file install_jenkins.sh with all commands to install and start Jenkins.
+Execute with following commands
 
 <img width="1267" height="296" alt="Screenshot 2025-09-27 200626" src="https://github.com/user-attachments/assets/09ea38b5-b7b7-45fd-b696-f181a9f606ab" />
+
+
+Install python3-venv - 
+`sudo apt update
+sudo apt install -y python3-venv`
+
 <img width="1284" height="925" alt="Screenshot 2025-09-27 200553" src="https://github.com/user-attachments/assets/5f868ed8-0a1b-49e9-a231-357c923150b1" />
 
 
 
 Access Jenkins on http://EC2IP:8080
 
+Use the command sudo cat /var/lib/jenkins/secrets/initialAdminPassword for initial login password to jenkins
+
 <img width="1906" height="969" alt="Screenshot 2025-09-27 211958" src="https://github.com/user-attachments/assets/4d5c676c-5e16-40d9-b4f7-c7157f37e7bc" />
 
 
-## 3) Create Jenkinsfile in repo
 
+## 3) Create Jenkinsfile in repo
+Add `gunicorn` `Flask` `pytest` in you requirements .txt
 <img width="1375" height="915" alt="Screenshot 2025-09-27 204727" src="https://github.com/user-attachments/assets/f1afa284-36e8-4d04-9ca7-8f7fffdf6442" />
+
 
 
 ## 4) Create a webhook
@@ -65,22 +102,26 @@ Script Path: Jenkinsfile
 
 
 
-## 7) Trigger pipeline by pushing changes
+## 7) Trigger the pipeline by pushing the changes to repo
+The pipeline is automatically triggered on every push to the GitHub repository.
 
 <img width="1913" height="975" alt="Screenshot 2025-09-24 183148" src="https://github.com/user-attachments/assets/16c8f7eb-dc53-481d-8d54-d8cbb401f613" />
 
 
-## 8) Check pipeline in Jenkins 
-
+## 8) Check the pipeline in Jenkins 
+Click on the latest build and check each stage of pipeline
 
 <img width="1894" height="971" alt="Screenshot 2025-09-27 205108" src="https://github.com/user-attachments/assets/4dc0b813-26c4-4756-a49d-5acdc3a56547" />
 
-## 9) Check Deployment in EC2 
+## 9) Check the Deployment in EC2 
+
+Verify the Flask application deployment on the EC2 instance once the Jenkins pipeline completes successfully at http://EC2IP:5000
 
 
 <img width="1397" height="829" alt="Screenshot 2025-09-27 204711" src="https://github.com/user-attachments/assets/e5fa6403-bd3a-467c-b003-e6cf29a2c6a3" />
 
-## 10) Email Notification 
+## 10) Check Email for Notification
+Email notifications are sent for both successful and failed builds.
 
 <img width="1092" height="679" alt="Screenshot 2025-09-27 214036" src="https://github.com/user-attachments/assets/bd4aba83-fd21-4b4a-8018-3cdba594f366" />
 
